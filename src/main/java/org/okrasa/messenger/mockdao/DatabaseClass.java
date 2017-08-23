@@ -1,5 +1,6 @@
 package org.okrasa.messenger.mockdao;
 
+import org.okrasa.messenger.model.Comment;
 import org.okrasa.messenger.model.Message;
 import org.okrasa.messenger.model.Profile;
 import java.util.HashMap;

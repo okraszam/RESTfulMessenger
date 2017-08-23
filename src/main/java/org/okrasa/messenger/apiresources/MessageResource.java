@@ -1,7 +1,10 @@
 package org.okrasa.messenger.apiresources;
 
+import org.okrasa.messenger.apiresources.beans.MessageFilterBean;
 import org.okrasa.messenger.model.Message;
 import org.okrasa.messenger.service.MessageService;
+
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -11,7 +14,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.*;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @Path("/messages")
@@ -22,14 +31,15 @@ public class MessageResource {
     MessageService messageService = new MessageService();
 
     @GET
-    public List<Message> getMessages(@QueryParam("year") int year,
-                                     @QueryParam("start") int start,
-                                     @QueryParam("size") int size) {
+    public List<Message> getMessages(@BeanParam MessageFilterBean filterBean) {
+//    public List<Message> getMessages(@QueryParam("year") int year,
+//                                     @QueryParam("start") int start,
+//                                     @QueryParam("size") int size) {
 
-        if (year > 0) {
-            return messageService.getAllMessagesForYear(year);
-        } else if (start >= 0 && size > 0) {
-            return messageService.getAllMessagesPaginated(start, size);
+        if (filterBean.getYear() > 0) {
+            return messageService.getAllMessagesForYear(filterBean.getYear());
+        } else if (filterBean.getStart() >= 0 && filterBean.getSize() > 0) {
+            return messageService.getAllMessagesPaginated(filterBean.getStart(), filterBean.getSize());
         } else {
             return messageService.getAllMessages();
         }
@@ -61,11 +71,19 @@ public class MessageResource {
     }
 
     @POST
-    public Message postMessage(Message message) {
+//    public Message postMessage(Message message) {
+    public Response postMessage(@Context UriInfo uriInfo, Message message) {
 
-        return messageService.addMessage(message);
+//        return messageService.addMessage(message);
+        Message newMessage = messageService.addMessage(message);
+//        return Response.status(Status.CREATED)
+        String newId = String.valueOf(newMessage.getId());
+        URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
+        return Response.created(uri)
+                       .entity(newMessage)
+                       .build();
 
-    }
+}
 
     @PUT
     @Path("/{messageId}")
@@ -81,6 +99,13 @@ public class MessageResource {
     public void deleteMessage(@PathParam("messageId") Long messageId) {
 
         messageService.deleteMessage(messageId);
+
+    }
+
+    @Path("/{messageId}/comments")
+    public CommentResource getCommentResource() {
+
+        return new CommentResource();
 
     }
 

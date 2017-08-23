@@ -2,7 +2,6 @@ package org.okrasa.messenger.service;
 
 import org.okrasa.messenger.mockdao.DatabaseClass;
 import org.okrasa.messenger.model.Profile;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
