@@ -31,6 +31,8 @@ public class MessageResource {
     MessageService messageService = new MessageService();
 
     @GET
+    @Consumes(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+    @Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
     public List<Message> getMessages(@BeanParam MessageFilterBean filterBean) {
 //    public List<Message> getMessages(@QueryParam("year") int year,
 //                                     @QueryParam("start") int start,
